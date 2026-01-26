@@ -504,7 +504,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const subject = `Check out ${activityName} at Mergington High School`;
     const body = `${shareData.text}\n\nLearn more: ${shareData.url}`;
     const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailtoUrl;
+    window.open(mailtoUrl, '_self');
   }
 
   // Function to render a single activity card
