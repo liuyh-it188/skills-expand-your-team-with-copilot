@@ -903,14 +903,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Calendar rendering function
   function renderCalendarView() {
+    // Calendar configuration constants
+    const CALENDAR_START_HOUR = 6;  // 6 AM
+    const CALENDAR_END_HOUR = 20;   // 8 PM
+    const TIME_SLOT_MINUTES = 30;   // 30-minute increments
+    
     // Days of the week
     const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     
     // Time slots (6 AM to 8 PM in 30-minute increments)
     const timeSlots = [];
-    for (let hour = 6; hour <= 20; hour++) {
+    for (let hour = CALENDAR_START_HOUR; hour <= CALENDAR_END_HOUR; hour++) {
       timeSlots.push(`${hour.toString().padStart(2, '0')}:00`);
-      if (hour < 20) {
+      if (hour < CALENDAR_END_HOUR) {
         timeSlots.push(`${hour.toString().padStart(2, '0')}:30`);
       }
     }
@@ -948,6 +953,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // Place activities on the calendar grid
   function placeActivitiesOnCalendar() {
     const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const CELL_HEIGHT = 60; // Height of each 30-minute cell in pixels
+    const TIME_SLOT_MINUTES = 30; // Each cell represents 30 minutes
     
     // Get all activities that match current filters
     let filteredActivities = {};
@@ -984,42 +991,71 @@ document.addEventListener("DOMContentLoaded", () => {
       filteredActivities[name] = details;
     });
 
-    // Group activities by day and time to detect overlaps
-    const activityPositions = {};
+    // Group activities by day and detect true overlaps
+    const activitiesByDay = {};
     
     Object.entries(filteredActivities).forEach(([name, details]) => {
       if (!details.schedule_details) return;
 
       const { days, start_time, end_time } = details.schedule_details;
-      const activityType = getActivityType(name, details.description);
-      const typeInfo = activityTypes[activityType];
+      const [startHour, startMinute] = start_time.split(':').map(Number);
+      const [endHour, endMinute] = end_time.split(':').map(Number);
+      const startMinutes = startHour * 60 + startMinute;
+      const endMinutes = endHour * 60 + endMinute;
 
       days.forEach(day => {
-        const dayIndex = daysOfWeek.indexOf(day);
-        if (dayIndex === -1) return;
+        if (!activitiesByDay[day]) {
+          activitiesByDay[day] = [];
+        }
+        activitiesByDay[day].push({
+          name,
+          details,
+          startMinutes,
+          endMinutes
+        });
+      });
+    });
 
-        // Calculate position based on time
-        const [startHour, startMinute] = start_time.split(':').map(Number);
-        const [endHour, endMinute] = end_time.split(':').map(Number);
+    // For each day, determine overlapping groups
+    Object.entries(activitiesByDay).forEach(([day, dayActivities]) => {
+      // Sort activities by start time
+      dayActivities.sort((a, b) => a.startMinutes - b.startMinutes);
+      
+      // Find overlapping groups
+      dayActivities.forEach((activity, index) => {
+        const overlapping = [activity];
         
-        const startMinutes = startHour * 60 + startMinute;
-        const endMinutes = endHour * 60 + endMinute;
+        // Check all other activities for overlaps
+        dayActivities.forEach((other, otherIndex) => {
+          if (index !== otherIndex) {
+            // Activities overlap if one starts before the other ends
+            const overlaps = (
+              (activity.startMinutes < other.endMinutes && activity.endMinutes > other.startMinutes)
+            );
+            if (overlaps && !overlapping.includes(other)) {
+              overlapping.push(other);
+            }
+          }
+        });
+        
+        activity.overlapping = overlapping;
+        activity.position = overlapping.indexOf(activity);
+        activity.totalOverlapping = overlapping.length;
+      });
+    });
+
+    // Render activities
+    Object.entries(activitiesByDay).forEach(([day, dayActivities]) => {
+      dayActivities.forEach(activity => {
+        const { name, details, startMinutes, endMinutes, position, totalOverlapping } = activity;
+        const activityType = getActivityType(name, details.description);
+        const typeInfo = activityTypes[activityType];
         const durationMinutes = endMinutes - startMinutes;
 
-        // Find cells that this activity should span
-        const cells = document.querySelectorAll(`.calendar-cell[data-day="${day}"]`);
-        
-        // Find overlapping activities for this time slot
-        const key = `${day}-${start_time}`;
-        if (!activityPositions[key]) {
-          activityPositions[key] = [];
-        }
-        
-        const position = activityPositions[key].length;
-        activityPositions[key].push(name);
-        const totalAtSlot = activityPositions[key].length;
+        // Find all cells for this day
+        const dayCells = document.querySelectorAll(`.calendar-cell[data-day="${day}"]`);
 
-        cells.forEach(cell => {
+        dayCells.forEach(cell => {
           const cellTime = cell.dataset.time;
           const [cellHour, cellMinute] = cellTime.split(':').map(Number);
           const cellMinutes = cellHour * 60 + cellMinute;
@@ -1037,14 +1073,13 @@ document.addEventListener("DOMContentLoaded", () => {
               activityDiv.style.borderLeft = `3px solid ${typeInfo.textColor}`;
               
               // Calculate height based on duration
-              const cellHeight = 60; // min-height of calendar-cell
-              const pixelsPerMinute = cellHeight / 30; // Each cell is 30 minutes
+              const pixelsPerMinute = CELL_HEIGHT / TIME_SLOT_MINUTES;
               const height = durationMinutes * pixelsPerMinute;
               activityDiv.style.height = `${height}px`;
               
               // Handle overlapping activities
-              if (totalAtSlot > 1) {
-                const width = 100 / totalAtSlot;
+              if (totalOverlapping > 1) {
+                const width = 100 / totalOverlapping;
                 activityDiv.style.width = `${width}%`;
                 activityDiv.style.left = `${position * width}%`;
               }
