@@ -463,6 +463,11 @@ document.addEventListener("DOMContentLoaded", () => {
           <p>Try adjusting your search or filter criteria</p>
         </div>
       `;
+      
+      // Also update calendar view if active
+      if (currentView === "calendar") {
+        renderCalendarView();
+      }
       return;
     }
 
@@ -470,6 +475,11 @@ document.addEventListener("DOMContentLoaded", () => {
     Object.entries(filteredActivities).forEach(([name, details]) => {
       renderActivityCard(name, details);
     });
+    
+    // Update calendar view if it's active
+    if (currentView === "calendar") {
+      renderCalendarView();
+    }
   }
 
   // Function to render a single activity card
@@ -860,6 +870,268 @@ document.addEventListener("DOMContentLoaded", () => {
     setDayFilter,
     setTimeRangeFilter,
   };
+
+  // View switching functionality
+  const cardViewButton = document.getElementById("card-view-button");
+  const calendarViewButton = document.getElementById("calendar-view-button");
+  const activitiesListView = document.getElementById("activities-list");
+  const calendarViewContainer = document.getElementById("calendar-view");
+  
+  let currentView = "card"; // "card" or "calendar"
+
+  // View toggle handlers
+  cardViewButton.addEventListener("click", () => {
+    if (currentView !== "card") {
+      currentView = "card";
+      cardViewButton.classList.add("active");
+      calendarViewButton.classList.remove("active");
+      activitiesListView.classList.remove("hidden");
+      calendarViewContainer.classList.add("hidden");
+    }
+  });
+
+  calendarViewButton.addEventListener("click", () => {
+    if (currentView !== "calendar") {
+      currentView = "calendar";
+      calendarViewButton.classList.add("active");
+      cardViewButton.classList.remove("active");
+      activitiesListView.classList.add("hidden");
+      calendarViewContainer.classList.remove("hidden");
+      renderCalendarView();
+    }
+  });
+
+  // Calendar rendering function
+  function renderCalendarView() {
+    // Days of the week
+    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    
+    // Time slots (6 AM to 8 PM in 30-minute increments)
+    const timeSlots = [];
+    for (let hour = 6; hour <= 20; hour++) {
+      timeSlots.push(`${hour.toString().padStart(2, '0')}:00`);
+      if (hour < 20) {
+        timeSlots.push(`${hour.toString().padStart(2, '0')}:30`);
+      }
+    }
+
+    // Create calendar grid
+    let calendarHTML = '<div class="calendar-grid">';
+    
+    // Header row
+    calendarHTML += '<div class="calendar-header" style="grid-column: 1;">Time</div>';
+    daysOfWeek.forEach(day => {
+      calendarHTML += `<div class="calendar-header">${day}</div>`;
+    });
+
+    // Time rows
+    timeSlots.forEach((time, timeIndex) => {
+      // Time label
+      const [hour, minute] = time.split(':').map(Number);
+      const displayHour = hour % 12 || 12;
+      const period = hour >= 12 ? 'PM' : 'AM';
+      calendarHTML += `<div class="calendar-time-label">${displayHour}:${minute.toString().padStart(2, '0')} ${period}</div>`;
+      
+      // Day cells
+      daysOfWeek.forEach((day, dayIndex) => {
+        calendarHTML += `<div class="calendar-cell" data-day="${day}" data-time="${time}" data-day-index="${dayIndex}" data-time-index="${timeIndex}"></div>`;
+      });
+    });
+
+    calendarHTML += '</div>';
+    calendarViewContainer.innerHTML = calendarHTML;
+
+    // Place activities on the calendar
+    placeActivitiesOnCalendar();
+  }
+
+  // Place activities on the calendar grid
+  function placeActivitiesOnCalendar() {
+    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    
+    // Get all activities that match current filters
+    let filteredActivities = {};
+    Object.entries(allActivities).forEach(([name, details]) => {
+      const activityType = getActivityType(name, details.description);
+      
+      // Apply category filter
+      if (currentFilter !== "all" && activityType !== currentFilter) {
+        return;
+      }
+
+      // Apply weekend filter if selected
+      if (currentTimeRange === "weekend" && details.schedule_details) {
+        const activityDays = details.schedule_details.days;
+        const isWeekendActivity = activityDays.some((day) =>
+          timeRanges.weekend.days.includes(day)
+        );
+        if (!isWeekendActivity) {
+          return;
+        }
+      }
+
+      // Apply search filter
+      const searchableContent = [
+        name.toLowerCase(),
+        details.description.toLowerCase(),
+        formatSchedule(details).toLowerCase(),
+      ].join(" ");
+
+      if (searchQuery && !searchableContent.includes(searchQuery.toLowerCase())) {
+        return;
+      }
+
+      filteredActivities[name] = details;
+    });
+
+    // Group activities by day and time to detect overlaps
+    const activityPositions = {};
+    
+    Object.entries(filteredActivities).forEach(([name, details]) => {
+      if (!details.schedule_details) return;
+
+      const { days, start_time, end_time } = details.schedule_details;
+      const activityType = getActivityType(name, details.description);
+      const typeInfo = activityTypes[activityType];
+
+      days.forEach(day => {
+        const dayIndex = daysOfWeek.indexOf(day);
+        if (dayIndex === -1) return;
+
+        // Calculate position based on time
+        const [startHour, startMinute] = start_time.split(':').map(Number);
+        const [endHour, endMinute] = end_time.split(':').map(Number);
+        
+        const startMinutes = startHour * 60 + startMinute;
+        const endMinutes = endHour * 60 + endMinute;
+        const durationMinutes = endMinutes - startMinutes;
+
+        // Find cells that this activity should span
+        const cells = document.querySelectorAll(`.calendar-cell[data-day="${day}"]`);
+        
+        // Find overlapping activities for this time slot
+        const key = `${day}-${start_time}`;
+        if (!activityPositions[key]) {
+          activityPositions[key] = [];
+        }
+        
+        const position = activityPositions[key].length;
+        activityPositions[key].push(name);
+        const totalAtSlot = activityPositions[key].length;
+
+        cells.forEach(cell => {
+          const cellTime = cell.dataset.time;
+          const [cellHour, cellMinute] = cellTime.split(':').map(Number);
+          const cellMinutes = cellHour * 60 + cellMinute;
+
+          // Check if this cell falls within the activity time
+          if (cellMinutes >= startMinutes && cellMinutes < endMinutes) {
+            // Calculate position within the cell
+            const isFirstCell = cellMinutes === startMinutes;
+            
+            if (isFirstCell) {
+              const activityDiv = document.createElement('div');
+              activityDiv.className = 'calendar-activity';
+              activityDiv.style.backgroundColor = typeInfo.color;
+              activityDiv.style.color = typeInfo.textColor;
+              activityDiv.style.borderLeft = `3px solid ${typeInfo.textColor}`;
+              
+              // Calculate height based on duration
+              const cellHeight = 60; // min-height of calendar-cell
+              const pixelsPerMinute = cellHeight / 30; // Each cell is 30 minutes
+              const height = durationMinutes * pixelsPerMinute;
+              activityDiv.style.height = `${height}px`;
+              
+              // Handle overlapping activities
+              if (totalAtSlot > 1) {
+                const width = 100 / totalAtSlot;
+                activityDiv.style.width = `${width}%`;
+                activityDiv.style.left = `${position * width}%`;
+              }
+              
+              // Activity content
+              const takenSpots = details.participants.length;
+              const totalSpots = details.max_participants;
+              
+              activityDiv.innerHTML = `
+                <div class="calendar-activity-title">${name}</div>
+                <div class="calendar-activity-enrollment">${takenSpots}/${totalSpots}</div>
+              `;
+              
+              // Add hover tooltip
+              activityDiv.addEventListener('mouseenter', (e) => {
+                showCalendarTooltip(e, name, details);
+              });
+              
+              activityDiv.addEventListener('mouseleave', () => {
+                hideCalendarTooltip();
+              });
+              
+              // Add click handler to open registration modal
+              activityDiv.addEventListener('click', () => {
+                if (currentUser && takenSpots < totalSpots) {
+                  openRegistrationModal(name);
+                }
+              });
+              
+              cell.appendChild(activityDiv);
+            }
+          }
+        });
+      });
+    });
+  }
+
+  // Tooltip for calendar activities
+  let tooltipElement = null;
+
+  function showCalendarTooltip(event, name, details) {
+    // Remove existing tooltip
+    hideCalendarTooltip();
+    
+    const tooltip = document.createElement('div');
+    tooltip.className = 'calendar-tooltip';
+    
+    const takenSpots = details.participants.length;
+    const totalSpots = details.max_participants;
+    const formattedSchedule = formatSchedule(details);
+    
+    tooltip.innerHTML = `
+      <div class="calendar-tooltip-title">${name}</div>
+      <div class="calendar-tooltip-description">${details.description}</div>
+      <div class="calendar-tooltip-time">${formattedSchedule}</div>
+      <div class="calendar-tooltip-enrollment">Enrollment: ${takenSpots}/${totalSpots}</div>
+    `;
+    
+    document.body.appendChild(tooltip);
+    tooltipElement = tooltip;
+    
+    // Position the tooltip
+    const rect = event.target.getBoundingClientRect();
+    const tooltipRect = tooltip.getBoundingClientRect();
+    
+    let left = rect.left + rect.width / 2 - tooltipRect.width / 2;
+    let top = rect.top - tooltipRect.height - 10;
+    
+    // Adjust if tooltip goes off screen
+    if (left < 10) left = 10;
+    if (left + tooltipRect.width > window.innerWidth - 10) {
+      left = window.innerWidth - tooltipRect.width - 10;
+    }
+    if (top < 10) {
+      top = rect.bottom + 10;
+    }
+    
+    tooltip.style.left = `${left}px`;
+    tooltip.style.top = `${top}px`;
+  }
+
+  function hideCalendarTooltip() {
+    if (tooltipElement) {
+      tooltipElement.remove();
+      tooltipElement = null;
+    }
+  }
 
   // Initialize app
   checkAuthentication();
