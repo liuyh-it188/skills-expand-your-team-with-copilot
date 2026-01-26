@@ -2,26 +2,28 @@ document.addEventListener("DOMContentLoaded", () => {
   // Dark mode toggle functionality
   const darkModeToggle = document.getElementById("dark-mode-toggle");
   
-  // Check for saved dark mode preference or default to light mode
-  const savedDarkMode = localStorage.getItem("darkMode");
-  if (savedDarkMode === "enabled") {
-    document.body.classList.add("dark-mode");
-    darkModeToggle.textContent = "☀️";
-  }
-  
-  // Toggle dark mode
-  darkModeToggle.addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-    
-    // Update button icon
-    if (document.body.classList.contains("dark-mode")) {
+  if (darkModeToggle) {
+    // Check for saved dark mode preference or default to light mode
+    const savedDarkMode = localStorage.getItem("darkMode");
+    if (savedDarkMode === "enabled") {
+      document.body.classList.add("dark-mode");
       darkModeToggle.textContent = "☀️";
-      localStorage.setItem("darkMode", "enabled");
-    } else {
-      darkModeToggle.textContent = "🌙";
-      localStorage.setItem("darkMode", "disabled");
     }
-  });
+    
+    // Toggle dark mode
+    darkModeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      
+      // Update button icon
+      if (document.body.classList.contains("dark-mode")) {
+        darkModeToggle.textContent = "☀️";
+        localStorage.setItem("darkMode", "enabled");
+      } else {
+        darkModeToggle.textContent = "🌙";
+        localStorage.removeItem("darkMode");
+      }
+    });
+  }
 
   // DOM elements
   const activitiesList = document.getElementById("activities-list");
