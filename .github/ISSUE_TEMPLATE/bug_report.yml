@@ -1,0 +1,57 @@
+name: 🐛 Bug Report
+description: Report a problem with the High School Activities website
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug! Please provide as much detail as possible to help us fix the issue.
+        
+  - type: textarea
+    id: problem-description
+    attributes:
+      label: What's wrong?
+      description: Describe the problem you're experiencing in simple terms
+      placeholder: "Example: The school colors are incorrect - the website is blue, but our school colors are white and lime green."
+    validations:
+      required: true
+      
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: What should happen instead?
+      description: Describe what you expected to see or what the correct behavior should be
+      placeholder: "Example: The website should use white and lime green colors to match our school colors."
+    validations:
+      required: true
+      
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: How can we see this problem?
+      description: Tell us the steps to see the issue
+      placeholder: |
+        1. Go to the website
+        2. Look at the colors
+        3. Notice they don't match our school colors
+    validations:
+      required: false
+      
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots or Examples
+      description: If applicable, add screenshots or links to show the problem
+      placeholder: "You can paste images directly here or add links"
+    validations:
+      required: false
+      
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Any other information?
+      description: Add any other details that might help us understand and fix the problem
+      placeholder: "Example: This affects both students and parents viewing the site"
+    validations:
+      required: false

@@ -1,0 +1,78 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement for the website
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting a new feature! Please provide clear details so we can understand and implement your idea.
+        
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: What feature would you like?
+      description: Describe the new feature or enhancement in simple terms
+      placeholder: "Example: Add a dark mode toggle so students can switch between light and dark themes."
+    validations:
+      required: true
+      
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: Why do we need this?
+      description: Explain the problem this feature would solve or the benefit it would provide
+      placeholder: "Example: Students keep asking for dark mode because they find it easier to read."
+    validations:
+      required: true
+      
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: How should it work?
+      description: Describe how the feature should work when completed
+      placeholder: |
+        Example:
+        - Add a toggle button in the top right corner
+        - Clicking it switches between light and dark themes
+        - The choice should be saved so it remembers the student's preference
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: priority
+    attributes:
+      label: How important is this?
+      description: Select the priority level for this feature
+      options:
+        - Low - Nice to have
+        - Medium - Would improve things
+        - High - Really needed soon
+    validations:
+      required: true
+      
+  - type: textarea
+    id: suggestions
+    attributes:
+      label: Any suggestions on how to implement?
+      description: If you have ideas on how this could be built, share them here
+      placeholder: "Example: Maybe add the toggle button next to the school logo"
+    validations:
+      required: false
+      
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples or references
+      description: Links to similar features on other websites, or images showing what you have in mind
+      placeholder: "You can paste images or links here"
+    validations:
+      required: false
+      
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Any other information?
+      description: Add any other details that might be helpful
+    validations:
+      required: false
