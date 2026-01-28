@@ -1,0 +1,82 @@
+name: 📝 Content Update
+description: Request changes to text, information, or documentation
+title: "[Content]: "
+labels: ["documentation", "content"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template to request updates to text, activity information, or documentation on the website.
+        
+  - type: dropdown
+    id: content-type
+    attributes:
+      label: What type of content needs updating?
+      description: Select the type of content that needs to be changed
+      options:
+        - Activity information (name, description, schedule)
+        - Website text or labels
+        - Documentation or help text
+        - Other content
+    validations:
+      required: true
+      
+  - type: textarea
+    id: current-content
+    attributes:
+      label: What is the current content?
+      description: Copy and paste the text that needs to be changed, or describe where it's located
+      placeholder: "Example: On the Basketball activity card, it says 'Meets on Tuesdays' but this is outdated."
+    validations:
+      required: true
+      
+  - type: textarea
+    id: new-content
+    attributes:
+      label: What should it say instead?
+      description: Provide the new or corrected content
+      placeholder: "Example: It should say 'Meets on Mondays and Wednesdays'"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: reason
+    attributes:
+      label: Why is this change needed?
+      description: Explain why this content needs to be updated
+      placeholder: "Example: The schedule changed at the start of the semester and students are showing up on the wrong days."
+    validations:
+      required: true
+      
+  - type: textarea
+    id: location
+    attributes:
+      label: Where is this content located?
+      description: Help us find the content that needs updating
+      placeholder: |
+        Example:
+        - On the main page, Basketball activity card
+        - In the activities list, third item
+        - On the About page, first paragraph
+    validations:
+      required: false
+      
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: How urgent is this update?
+      description: Select how soon this needs to be updated
+      options:
+        - Low - Can wait
+        - Medium - Should be updated soon
+        - High - Urgent, causing confusion or problems
+    validations:
+      required: true
+      
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Any other information?
+      description: Add any other details that might be helpful
+    validations:
+      required: false
