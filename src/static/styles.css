@@ -47,7 +47,7 @@ body {
   margin: 0 auto;
   padding: 12px;
   background-color: var(--background);
-  font-size: 0.9rem;
+  font-size: 24px;
 }
 
 header {
@@ -66,11 +66,11 @@ header {
 
 header h1 {
   margin-bottom: 5px;
-  font-size: 1.6rem;
+  font-size: 24px;
 }
 
 header h2 {
-  font-size: 1.2rem;
+  font-size: 24px;
 }
 
 main {
@@ -92,7 +92,7 @@ section h3 {
   padding-bottom: 8px;
   border-bottom: 1px solid var(--border);
   color: var(--primary);
-  font-size: 1.1rem;
+  font-size: 24px;
 }
 
 /* New Layout Styles */
@@ -114,7 +114,7 @@ section h3 {
   padding-bottom: 8px;
   border-bottom: 1px solid var(--border);
   color: var(--primary);
-  font-size: 1.1rem;
+  font-size: 24px;
 }
 
 .activities-content {
@@ -160,7 +160,7 @@ section h3 {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   position: relative;
   overflow: hidden;
-  font-size: 0.85rem;
+  font-size: 24px;
 }
 
 .activity-card:hover {
@@ -172,7 +172,7 @@ section h3 {
 .activity-card h4 {
   margin-bottom: 8px;
   color: var(--primary);
-  font-size: 1rem;
+  font-size: 24px;
   letter-spacing: 0.3px;
   padding-bottom: 6px;
   border-bottom: 1px solid var(--border-light);
@@ -197,7 +197,7 @@ section h3 {
   right: 8px;
   background: #e8eaf6;
   color: #3949ab;
-  font-size: 0.65rem;
+  font-size: 24px;
   font-weight: bold;
   padding: 2px 6px;
   border-radius: 10px;
@@ -210,7 +210,7 @@ section h3 {
   position: absolute;
   top: 8px;
   left: 8px;
-  font-size: 0.65rem;
+  font-size: 24px;
   font-weight: bold;
   padding: 2px 6px;
   border-radius: 10px;
@@ -250,7 +250,7 @@ section h3 {
   display: flex;
   justify-content: space-between;
   margin-top: 3px;
-  font-size: 0.7rem;
+  font-size: 24px;
   color: var(--text-secondary);
 }
 
@@ -276,7 +276,7 @@ section h3 {
 .participants-list h5 {
   color: var(--primary);
   margin-bottom: 5px;
-  font-size: 0.8em;
+  font-size: 24px;
 }
 
 .participants-list ul {
@@ -289,7 +289,7 @@ section h3 {
 .participants-list li {
   padding: 2px 0;
   color: var(--text-secondary);
-  font-size: 0.8em;
+  font-size: 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -309,7 +309,7 @@ section h3 {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 0.85rem;
+  font-size: 24px;
   letter-spacing: 0.3px;
   text-transform: uppercase;
   border: none;
@@ -320,7 +320,7 @@ button {
   color: white;
   border: none;
   padding: 6px 12px;
-  font-size: 0.85rem;
+  font-size: 24px;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.2s;
@@ -340,7 +340,7 @@ button {
   text-align: center;
   padding: 8px 12px;
   border-radius: 4px;
-  font-size: 0.8rem;
+  font-size: 24px;
   position: absolute;
   z-index: 1;
   bottom: 125%;
@@ -465,7 +465,7 @@ button {
   position: absolute;
   right: 12px;
   top: 8px;
-  font-size: 18px;
+  font-size: 24px;
   cursor: pointer;
   color: var(--text-secondary);
   line-height: 1;
@@ -474,7 +474,7 @@ button {
 /* Login modal specific styling */
 #login-modal .modal-content h3 {
   color: var(--primary);
-  font-size: 1.2rem;
+  font-size: 24px;
   margin-bottom: 15px;
   text-align: center;
 }
@@ -493,7 +493,7 @@ button {
   border-radius: 6px;
   border: 1px dashed var(--border);
   margin: 10px 0;
-  font-size: 0.85rem;
+  font-size: 24px;
 }
 
 footer {
@@ -501,7 +501,7 @@ footer {
   margin-top: 20px;
   padding: 10px;
   color: var(--text-secondary);
-  font-size: 0.8rem;
+  font-size: 24px;
 }
 
 /* Search and Filter Components - Updated for Sidebar */
@@ -518,7 +518,7 @@ footer {
   border: 1px solid var(--border);
   border-right: none;
   border-radius: 20px 0 0 20px;
-  font-size: 0.85rem;
+  font-size: 24px;
   transition: all 0.3s ease;
 }
 
@@ -549,7 +549,7 @@ footer {
 }
 
 .search-icon {
-  font-size: 1rem;
+  font-size: 24px;
 }
 
 .filter-container {
@@ -562,7 +562,7 @@ footer {
 .filter-label {
   font-weight: 600;
   color: var(--text-primary);
-  font-size: 0.8rem;
+  font-size: 24px;
 }
 
 .category-filters,
@@ -583,7 +583,7 @@ footer {
   color: var(--text-primary);
   padding: 4px 10px;
   border-radius: 15px;
-  font-size: 0.75rem;
+  font-size: 24px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -614,7 +614,7 @@ footer {
   color: var(--text-primary);
   padding: 5px 12px;
   border-radius: 15px;
-  font-size: 0.8rem;
+  font-size: 24px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -674,7 +674,7 @@ footer {
   background-color: rgba(255, 255, 255, 0.2);
   border-radius: 20px;
   padding: 4px 12px;
-  font-size: 0.85rem;
+  font-size: 24px;
   transition: background-color 0.2s;
 }
 
@@ -683,13 +683,13 @@ footer {
 }
 
 .user-icon {
-  font-size: 1rem;
+  font-size: 24px;
 }
 
 #logout-button {
   padding: 3px 10px;
   background-color: rgba(255, 255, 255, 0.2);
-  font-size: 0.8rem;
+  font-size: 24px;
   border-radius: 20px;
 }
 
@@ -708,7 +708,7 @@ footer {
 }
 
 .share-label {
-  font-size: 0.75rem;
+  font-size: 24px;
   color: var(--text-secondary);
   font-weight: 600;
   margin-right: 4px;
